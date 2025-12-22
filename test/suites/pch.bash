@@ -871,8 +871,14 @@ EOF
         $CCACHE_COMPILE --relocatable-pch -isysroot "$(pwd)/sysroot" -c pch2.c
     expect_stat direct_cache_hit 0
     expect_stat cache_miss 1
+if  $HOST_OS_WINDOWS; then
+    dir1_pwd=$(cygpath -m $(pwd))
+else
+    dir1_pwd=$(pwd)
+fi
+    echo "pwd: $dir1_pwd"
     # Check that the absolute path is passed to the compiler
-    if ! grep -q "Executing.*-isysroot $(pwd).sysroot" pch2.o.*.ccache-log; then
+    if ! grep -q "Executing.*-isysroot ${dir1_pwd}/sysroot" pch2.o.*.ccache-log; then
         test_failed "absolute -isysroot path does not appear in ccache logs"
     fi
 
